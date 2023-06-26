@@ -3,6 +3,7 @@
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+
 ?>
 
 <main class="main-content main-content--left container">
@@ -27,16 +28,15 @@ use yii\helpers\ArrayHelper;
             $user = Yii::$app->user->identity;
 
             if ($user->user_img) {
-                echo Html::img("@web/uploads/" . Html::encode($user->user_img), ["class" => "avatar-preview", "width" => "83", "height" => "83"]);
+                echo Html::img("/uploads/" . Html::encode($user->user_img), ["class" => "avatar-preview", "width" => "83", "height" => "83"]);
             } else {
-                echo Html::img("img/man-glasses.png", ["class" => "avatar-preview", "width" => "83", "height" => "83"]);
+                echo Html::img("/img/man-glasses.png", ["class" => "avatar-preview", "width" => "83", "height" => "83"]);
             }
             ?>
 
             <?= $form->field($model, 'user_img')->fileInput(['id' => 'button-input', 'style' => 'display:none;']) ?>
 
             <?= Html::label('Сменить аватар', 'button-input', ['class' => 'button button--black']) ?>
-
 
         </div>
         <div class="form-group">

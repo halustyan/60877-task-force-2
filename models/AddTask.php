@@ -76,9 +76,10 @@ class AddTask extends Model
 
     public function createNewTask()
     {
-
         //добавление геокодера
-        $api_key = 'e666f398-c983-4bde-8f14-e3fec900592a';
+//        $api_key = 'e666f398-c983-4bde-8f14-e3fec900592a';
+        $api_key = '9191a52b-ad1d-4ad1-8098-4f12761fe6a5';
+//        $api_key = '286a0cc9-43d5-49e1-8e7a-3b0d4b1631f2';
         $client = new Client();
         $response = $client->request(
             'GET',
