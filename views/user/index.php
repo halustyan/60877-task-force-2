@@ -20,7 +20,7 @@ use yii\helpers\Html;
         <h3 class="head-main"><?php echo $singleUser->name; ?></h3>
         <div class="user-card">
             <div class="photo-rate">
-                <?php echo \yii\helpers\Html::img("@web/img/{$singleUser->user_img}", ['alt' => '', 'id' => '', 'width' => 191, 'height' => 190]); ?>
+                <?php echo \yii\helpers\Html::img("/img/{$singleUser->user_img}", ['alt' => '', 'id' => '', 'width' => 191, 'height' => 190]); ?>
                 <?php if ($numberReplies > 0): ?>
                     <div class="card-rate">
 
@@ -75,7 +75,7 @@ use yii\helpers\Html;
         <?php foreach ($singleUser->executorReplies as $reply): ?>
 
             <div class="response-card">
-                <?php echo \yii\helpers\Html::img("@web/img/{$reply->userWriter->user_img}", ['alt' => '', 'id' => '', 'width' => 120, 'height' => 127]); ?>
+                <?php echo \yii\helpers\Html::img("/img/{$reply->userWriter->user_img}", ['alt' => '', 'id' => '', 'width' => 120, 'height' => 127]); ?>
                 <div class="feedback-wrapper">
                     <p class="feedback">
                         <?php echo $reply->description; ?>

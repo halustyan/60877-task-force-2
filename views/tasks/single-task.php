@@ -128,7 +128,7 @@ $identity = Yii::$app->user->identity;
                 <?php
 
                 if (file_exists("img/" . $reply->user->user_img)) {
-                    echo \yii\helpers\Html::img("@web/img/{$reply->user->user_img}", ['alt' => 'Фотка ', 'id' => '', 'width' => 100, 'height' => 100]);
+                    echo \yii\helpers\Html::img("/img/{$reply->user->user_img}", ['alt' => 'Фотка ', 'id' => '', 'width' => 100, 'height' => 100]);
                 }
 
                 ?>

@@ -13,6 +13,7 @@ use yii\bootstrap4\NavBar;
 use yii\helpers\Url;
 
 MainAsset::register($this);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -25,17 +26,16 @@ MainAsset::register($this);
     <?php $this->head() ?>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=e666f398-c983-4bde-8f14-e3fec900592a&lang=ru_RU"
             type="text/javascript"></script>
-
 </head>
 <body class="d-flex flex-column h-100">
+
 <?php $this->beginBody() ?>
+
 <?php if (\Yii::$app->controller->id !== "register"): ?>
     <header class="page-header">
         <nav class="main-nav">
-
-
             <a href='<?php echo Url::to(['/tasks']); ?>' class="header-logo">
-                <?php echo Html::img(Yii::$app->urlManager->createUrl('img/logotype.png')); ?>
+                <?php echo Html::img('/img/logotype.png'); ?>
             </a>
 
             <div class="nav-wrapper">
@@ -94,11 +94,9 @@ MainAsset::register($this);
         <div class="user-block">
             <?php
             $isGuest = Yii::$app->user->isGuest;
-            if (!$isGuest):?>
+            if (!$isGuest): ?>
                 <a href="#">
-
                     <?php
-
                     $user_img = \Yii::$app->user->identity->user_img;
 
                     if ($user_img !== null) {
@@ -107,14 +105,13 @@ MainAsset::register($this);
                         } else {
                             echo Html::img($user_img, ['width' => '60', 'height' => '60']);
                         }
+                    } else {
+                        echo Html::img('/img/man-glasses.png', ['width' => '60', 'height' => '60']);
                     }
-
                     ?>
-
                 </a>
 
                 <div class="user-menu">
-
                     <p class="user-name"><?php echo Html::encode(Yii::$app->user->identity->name); ?></p>
                     <div class="popup-head">
                         <ul class="popup-menu">
@@ -129,24 +126,16 @@ MainAsset::register($this);
                             </li>
                         </ul>
                     </div>
-
                 </div>
-
             <?php endif; ?>
         </div>
-
     </header>
 <?php endif; ?>
 
-
-
-        <?= $content ?>
-
-
+<?= $content ?>
 
 <footer class="footer mt-auto py-3 text-muted">
-    <div class="container">
-    </div>
+    <div class="container"></div>
 </footer>
 
 <?php $this->endBody() ?>

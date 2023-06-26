@@ -18,6 +18,7 @@ use app\models\UserReply;
 use yii\base\BaseObject;
 use yii\data\Pagination;
 use yii\db\Exception;
+use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use Yii;
@@ -34,43 +35,40 @@ class TasksController extends SecuredController
         return [
             'access' => [
                 'class' => AccessControl::class,
+                'denyCallback' => function ($rule, $action) {
+                    return Yii::$app->user->isGuest ? $this->redirect('login') : $this->redirect('error');
+                },
                 'rules' => [
                     [
                         'allow' => true,
+                        'actions' => [
+                            'index',
+                            'my-tasks',
+                            'view',
+                            'add-reply',
+                            'finish-task',
+                            'rejected-task',
+                            'accept-task-reply',
+                            'reject-task-reply'
+                        ],
                         'roles' => ['@']
                     ],
                     [
-                        'allow' => false,
+                        'allow' => true,
                         'actions' => ['add'],
                         'matchCallback' => function ($rule, $action) {
-                            if (\Yii::$app->user->isGuest) {
-                                return false;
-                            }
-                            return \Yii::$app->user->identity->user_status === User::EXECUTOR;
-                        }
+                            return !Yii::$app->user->isGuest && Yii::$app->user->identity->user_status === User::EXECUTOR;
+                        },
                     ]
                 ]
             ]
         ];
     }
 
-  /*  public function actionIndex()
-    {
-
-        $categories = Category::find()->all();
-
-        $modelSearch = new SearchTasks();
-
-        $dataProvider = $modelSearch->search($this->request->post());
-
-
-        return $this->render('index', [
-            'modelSearch' => $modelSearch,
-            'dataProvider' => $dataProvider,
-            'categories' => $categories,
-        ]);
-
-    }*/
+    /**
+     * Список всех задач с фильтрацией
+     * @return string
+     */
     public function actionIndex()
     {
         $categories = Category::find()->all();
@@ -94,21 +92,29 @@ class TasksController extends SecuredController
         ]);
     }
 
+    /**
+     * Список задач пользователя
+     * @return string
+     */
     public function actionMyTasks()
     {
         $my_tasks = Task::find()->where(['executor_id' => \Yii::$app->user->identity->id])->all();
-
         $request = Yii::$app->request;
-
         $status = $request->get('status');
-
 
         $my_tasks_new = Task::find()->where(['executor_id' => \Yii::$app->user->identity->id])->andWhere(['status' => 'new'])->all();
         $my_tasks_in_process = Task::find()->where(['executor_id' => \Yii::$app->user->identity->id])->andWhere(['status' => 'in_progress'])->all();
         $my_tasks_done = Task::find()->where(['executor_id' => \Yii::$app->user->identity->id])->andWhere(['status' => 'done'])->all();
+
         return $this->render('my-tasks', ['my_tasks' => $my_tasks, 'my_tasks_new' => $my_tasks_new, 'my_tasks_in_process' => $my_tasks_in_process, 'my_tasks_done' => $my_tasks_done, 'status' => $status]);
     }
 
+    /**
+     * Просмотр описания задачи
+     * @param int $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionView(int $id)
     {
         $task = Task::find()->where(['id' => $id])->one();
@@ -140,29 +146,36 @@ class TasksController extends SecuredController
             ]);
     }
 
+    /**
+     * Добавляем задачу
+     * @return string
+     * @throws Exception
+     * @throws \Throwable
+     */
     public function actionAdd()
     {
-        $categories = Category::find()->all();
         $model = new AddTask();
+        $categories = Category::find()->all();
         $formData = \Yii::$app->request->post();
+
         if ($model->load($formData) && $model->validate()) {
             try {
                 $task = $model->createNewTask();
             } catch (RequestException $e) {
                 throw new Exception('Can`t add new task');
             }
+
             \Yii::$app->response->redirect(['/tasks/view/', 'id' => $task->id]);
         }
-        $user = Yii::$app->user->identity;
-        if ($user->user_status==='customer') {
-            return $this->render('add', ['model' => $model, 'categories' => $categories, 'user'=>$user]);
-        }
-       else {
-           return $this->redirect(['tasks/index']);
-       }
+
+        return $this->render('add', ['model' => $model, 'categories' => $categories]);
     }
 
-
+    /**
+     * Добавляем отклик на задачу
+     * @param $id
+     * @return void|\yii\web\Response
+     */
     public function actionAddReply($id)
     {
         $taskModel = new AddReply(); // модель формы
@@ -194,6 +207,11 @@ class TasksController extends SecuredController
 
     }
 
+    /**
+     * Завершение задачи
+     * @param $id
+     * @return void|\yii\web\Response
+     */
     public function actionFinishTask($id)
     {
         $taskModel = new FinishReply();
@@ -220,7 +238,12 @@ class TasksController extends SecuredController
         }
     }
 
-
+    /**
+     * Отмена задачи
+     * @param $id
+     * @return \yii\web\Response
+     * @throws \Exception
+     */
     public function actionRejectedTask($id)
     {
         $rejectedTask = Task::find()->where(['id' => $id])->one();
@@ -234,7 +257,7 @@ class TasksController extends SecuredController
 
     }
 
-//действия с кнопками на отзывах
+    //действия с кнопками на отзывах
     public function actionAcceptTaskReply()
     {
         $request = Yii::$app->request;
@@ -263,10 +286,7 @@ class TasksController extends SecuredController
         } else {
             throw new \Exception('Не смогли отказать юзеру!');
         }
-
     }
-
-
 }
 
 
